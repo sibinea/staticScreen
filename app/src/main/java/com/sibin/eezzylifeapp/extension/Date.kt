@@ -1,4 +1,4 @@
-package com.sibin.eezzylifeapp
+package com.sibin.eezzylifeapp.extension
 
 import java.text.SimpleDateFormat
 import java.util.*

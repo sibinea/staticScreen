@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
-    tools:context=".ScrollingActivity"
+    tools:context=".view.ScrollingActivity"
     tools:showIn="@layout/activity_scrolling">
 
     <LinearLayout
@@ -20,16 +20,12 @@
             android:background="@color/white"
             android:orientation="vertical">
 
-            <com.michalsvec.singlerowcalendar.calendar.SingleRowCalendar
-                android:id="@+id/calender_view"
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/view_pager"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingTop="5dp"
-                android:paddingBottom="5dp"
-                app:deselection="false"
-                app:longPress="false"
-                app:multiSelection="false" />
-
+                android:paddingBottom="5dp" />
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"

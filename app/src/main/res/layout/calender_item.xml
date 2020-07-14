@@ -2,10 +2,8 @@
     android:id="@+id/cl_calendar_item"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_marginStart="4dp"
-    android:layout_marginEnd="4dp"
     android:orientation="vertical"
-    android:padding="10dp">
+    android:padding="8dp">
 
     <TextView
         android:id="@+id/tv_day_calendar_item"
@@ -13,17 +11,42 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:textColor="@android:color/black"
-        android:padding="10dp"
+        android:padding="8dp"
         android:textSize="14sp" />
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/tv_date_calendar_item"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_centerInParent="true"
+            android:background="@drawable/date_bg_unselected"
+            android:gravity="center"
+            android:textColor="@android:color/black"
+            android:textSize="16sp" />
+        <TextView
+            android:id="@+id/new_event"
+            android:layout_width="6dp"
+            android:layout_height="6dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_alignEnd="@+id/tv_date_calendar_item"
+            android:layout_marginTop="1dp"
+            android:layout_marginEnd="1dp"
+            android:background="@drawable/ic_circle"
+            android:gravity="center"
+            android:textSize="16sp" />
+    </RelativeLayout>
+
     <TextView
-        android:id="@+id/tv_date_calendar_item"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="5dp"
+        android:layout_height="5dp"
+        android:layout_margin="2dp"
         android:layout_gravity="center_horizontal"
         android:gravity="center"
-        android:textColor="@android:color/black"
-        android:background="@drawable/date_bg_unselected"
+        android:background="@drawable/ic_circle_grey"
         android:textSize="16sp" />
-
 
 </LinearLayout>

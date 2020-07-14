@@ -1,24 +1,31 @@
-package com.sibin.eezzylifeapp
+package com.sibin.eezzylifeapp.view
 
 import android.content.res.Resources
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import android.os.Bundle
+import android.util.Log
 import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
+import androidx.viewpager2.adapter.FragmentStateAdapter
+import androidx.viewpager2.widget.ViewPager2
+import androidx.viewpager2.widget.ViewPager2.ORIENTATION_HORIZONTAL
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import com.michalsvec.singlerowcalendar.calendar.CalendarChangesObserver
-import com.michalsvec.singlerowcalendar.calendar.CalendarViewManager
-import com.michalsvec.singlerowcalendar.calendar.SingleRowCalendarAdapter
-import com.michalsvec.singlerowcalendar.selection.CalendarSelectionManager
-import com.michalsvec.singlerowcalendar.utils.DateUtils
-import kotlinx.android.synthetic.main.calender_item.view.*
+import com.sibin.eezzylifeapp.*
+import com.sibin.eezzylifeapp.adapter.ViewPagerAdapter
+import com.sibin.eezzylifeapp.extension.invisible
+import com.sibin.eezzylifeapp.extension.loadFromUrl
+import com.sibin.eezzylifeapp.extension.toString
+import com.sibin.eezzylifeapp.extension.visible
+import com.sibin.eezzylifeapp.listener.OnDateSelectedListener
 import kotlinx.android.synthetic.main.comment.*
 import kotlinx.android.synthetic.main.comment_evening.*
 import kotlinx.android.synthetic.main.comment_night.*
@@ -35,20 +42,25 @@ import kotlinx.android.synthetic.main.event_details_host_me_night.*
 import java.util.*
 
 
-class ScrollingActivity : AppCompatActivity() {
+class ScrollingActivity : AppCompatActivity(), OnDateSelectedListener {
 
     private val calendar = Calendar.getInstance()
     private var currentMonth = 0
-    val dateFormat = "EEE dd, MMM yyyy"
+    private val dateFormat = "EEE dd, MMM yyyy"
     private var margin: Int = 0
     private var cardElevation: Int = 0
-
+    private lateinit var adapter: ViewPagerAdapter
+    private var selectedPos: Int = -1
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_scrolling)
-        setupCalenderView()
         margin = dpToPx(10f)
         cardElevation = dpToPx(5f)
+        selected_date.text = Calendar.getInstance().time.toString(dateFormat)
+        adapter = ViewPagerAdapter(this)
+        view_pager.adapter = adapter
+        view_pager.orientation = ORIENTATION_HORIZONTAL
+        view_pager.requestDisallowInterceptTouchEvent(true)
 
         afternoon.setOnClickListener {
             if (host_view_after_noon.visibility == View.VISIBLE) {
@@ -236,71 +248,6 @@ class ScrollingActivity : AppCompatActivity() {
         cardView.requestLayout()
     }
 
-    private fun setupCalenderView() {
-        calendar.time = Date()
-        currentMonth = calendar[Calendar.MONTH]
-        selected_date.text = calendar.time.toString(dateFormat)
-        val myCalendarViewManager = object :
-            CalendarViewManager {
-            override fun setCalendarViewResourceId(
-                position: Int,
-                date: Date,
-                isSelected: Boolean
-            ): Int {
-                val cal = Calendar.getInstance()
-                cal.time = date
-                return when (cal[Calendar.DAY_OF_WEEK]) {
-                    Calendar.MONDAY, Calendar.THURSDAY, Calendar.FRIDAY, Calendar.SATURDAY -> R.layout.calender_item_have_events
-                    Calendar.SUNDAY -> R.layout.calender_item_new_events
-                    else -> R.layout.calender_item
-                }
-            }
-
-            override fun bindDataToCalendarView(
-                holder: SingleRowCalendarAdapter.CalendarViewHolder,
-                date: Date,
-                position: Int,
-                isSelected: Boolean
-            ) {
-                holder.itemView.tv_date_calendar_item.text = DateUtils.getDayNumber(date)
-                holder.itemView.tv_day_calendar_item.text = DateUtils.getDay1LetterName(date)
-                if (isSelected) {
-                    holder.itemView.tv_date_calendar_item.background =
-                        getDrawable(R.drawable.date_bg_selected)
-                    holder.itemView.tv_date_calendar_item.setTextColor(getColor(R.color.white))
-                }
-            }
-        }
-        val myCalendarChangesObserver = object :
-            CalendarChangesObserver {
-            override fun whenSelectionChanged(isSelected: Boolean, position: Int, date: Date) {
-                super.whenSelectionChanged(isSelected, position, date)
-            }
-        }
-        val mySelectionManager = object : CalendarSelectionManager {
-            override fun canBeItemSelected(position: Int, date: Date): Boolean {
-                val cal = Calendar.getInstance()
-                cal.time = date
-                selected_date.text = cal.time.toString(dateFormat)
-                return true
-
-            }
-        }
-        val singleRowCalendar = calender_view.apply {
-            calendarViewManager = myCalendarViewManager
-            calendarChangesObserver = myCalendarChangesObserver
-            calendarSelectionManager = mySelectionManager
-            setDates(getFutureDatesOfCurrentMonth())
-            init()
-        }
-    }
-
-
-    private fun getFutureDatesOfCurrentMonth(): List<Date> {
-        currentMonth = calendar[Calendar.MONTH]
-        return getDates(mutableListOf())
-    }
-
     private fun getDates(list: MutableList<Date>): List<Date> {
         calendar.set(Calendar.MONTH, currentMonth)
         calendar.set(Calendar.DAY_OF_MONTH, 1)
@@ -327,4 +274,21 @@ class ScrollingActivity : AppCompatActivity() {
         return px.toInt()
     }
 
+    override fun onDateClick(date: Date, position: Int) {
+        val cal = Calendar.getInstance()
+        cal.time = date
+        selected_date.text = cal.time.toString(dateFormat)
+        adapter.selectedPos = position
+        selectedPos = position
+    }
+
+    fun getSelected(): Int {
+        return selectedPos
+    }
+
+    fun setSelected(selected: Int) {
+        selectedPos = selected
+    }
+
 }
+
